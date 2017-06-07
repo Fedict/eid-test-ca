@@ -31,7 +31,7 @@ CK_FUNCTION_LIST_PTR 	functions;
 
 #endif
 
-#define check_rv(call) { CK_RV rv = call; if (rv != CKR_OK) { printf("E: %s failed: %#010x\n", #call, rv); exit(EXIT_FAILURE); } }
+#define check_rv(call) { CK_RV rv = call; if (rv != CKR_OK) { printf("E: %s failed: %#010lx\n", #call, rv); exit(EXIT_FAILURE); } }
 
 #ifndef _WIN32
 #define get_func(C_function) C_function
@@ -236,7 +236,7 @@ char* pem_csr(struct derdata* csr) {
 	strcpy(encoded, header);
 	encoded += sizeof header - 1;
 	base64_init_encodestate(&state);
-	count = base64_encode_block(csr->data, csr->len, encoded, &state);
+	count = base64_encode_block((char*)csr->data, csr->len, encoded, &state);
 	encoded += count;
 	count = base64_encode_blockend(encoded, &state);
 	encoded += count - 1;
@@ -259,7 +259,6 @@ int main(int argc, char** argv) {
 	CK_ULONG count = 1;
 	struct derdata* data;
 	char* pem;
-	int fd;
 	int do_256;
 	char *given, *sur, *rrn;
 
